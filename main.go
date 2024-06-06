@@ -15,8 +15,10 @@ import (
 )
 
 var opts struct {
-	Verbose bool   `arg:"-v,--verbose" help:"Verbose output"`
-	Target  string `arg:"positional,required" help:"The file to open in web browser"`
+	Verbose         bool   `arg:"-v,--verbose" help:"Verbose output"`
+	NoSymlinkFollow bool   `arg:"--no-follow" help:"Do not follow symbolic links"`
+	NoBrowserOpen   bool   `arg:"-n,--no-open" help:"Do not open web browser"`
+	Target          string `arg:"positional,required" help:"The file to open in web browser"`
 }
 
 var logger *log.Logger
@@ -35,37 +37,50 @@ func main() {
 	if err != nil {
 		die(err)
 	}
+	logger.Debugf("Found git root folder: %s\n", root)
+	logger.Debugf("Relative file path: %s\n", relative)
 
 	remoteURL, err := readGitRemoteURL(root)
 	if err != nil {
 		die(err)
 	}
+	logger.Debugf("Found git remote URL: %s\n", remoteURL)
 
 	remoteURL, err = convert.ConvertGitRemoteToHTTP(remoteURL)
 	if err != nil {
 		die(err)
 	}
+	logger.Debugf("Remote URL as https: %s\n", root)
 
 	branch, err := getDefaultBranchName(root)
 	if err != nil {
 		die(err)
 	}
+	logger.Debugf("Default git branch name: %s\n", branch)
 
 	url := fmt.Sprintf("%s/-/blob/%s/%s", remoteURL, branch, relative)
-	logger.Debugf("Root     : %s\n", root)
-	logger.Debugf("Repo     : %s\n", remoteURL)
-	logger.Debugf("Branch   : %s\n", branch)
-	logger.Debugf("Relative : %s\n", relative)
-	logger.Debugf("URL      : %s\n", url)
+	logger.Debugf("")
+	logger.Debugf("Destination URL: %s\n", url)
 
-	err = openBrowser(url)
-	if err != nil {
-		die(err)
+	if !opts.NoBrowserOpen {
+		err = openBrowser(url)
+		if err != nil {
+			die(err)
+		}
 	}
 }
 
 func findRepoAndRelativePath(target string) (string, string, error) {
-	target, err := filepath.Abs(target)
+	var err error
+	if !opts.NoSymlinkFollow {
+		logger.Debugf("Will follow symbolic links if any")
+		target, err = filepath.EvalSymlinks(target)
+		if err != nil {
+			return "", "", err
+		}
+	}
+
+	target, err = filepath.Abs(target)
 	if err != nil {
 		return "", "", err
 	}
