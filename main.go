@@ -58,7 +58,7 @@ func main() {
 	}
 	logger.Debugf("Default git branch name: %s\n", branch)
 
-	url := fmt.Sprintf("%s/-/blob/%s/%s", remoteURL, branch, relative)
+	url := makeFinalURL(remoteURL, branch, relative)
 	logger.Debugf("")
 	logger.Debugf("Destination URL: %s\n", url)
 
@@ -67,6 +67,15 @@ func main() {
 		if err != nil {
 			die(err)
 		}
+	}
+}
+
+func makeFinalURL(remoteURL, branch, relativeFileName string) string {
+	if strings.Contains(remoteURL, "github") {
+		return fmt.Sprintf("%s/blob/%s/%s", remoteURL, branch, relativeFileName)
+	} else {
+		// Gitlab style
+		return fmt.Sprintf("%s/-/blob/%s/%s", remoteURL, branch, relativeFileName)
 	}
 }
 
