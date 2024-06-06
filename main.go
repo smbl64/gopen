@@ -50,7 +50,7 @@ func main() {
 	if err != nil {
 		die(err)
 	}
-	logger.Debugf("Remote URL as https: %s\n", root)
+	logger.Debugf("Remote URL as https: %s\n", remoteURL)
 
 	branch, err := getDefaultBranchName(root)
 	if err != nil {
