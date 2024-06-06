@@ -1,14 +1,11 @@
 package convert
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 )
 
 const basePath = "https://gitlab.example.org"
-
-var ErrUnknownFormat = errors.New("unknown url format")
 
 var regz []*regexp.Regexp = []*regexp.Regexp{
 	// Matches this format:
@@ -30,5 +27,5 @@ func ConvertGitRemoteToHTTP(remoteURL string) (string, error) {
 		}
 	}
 
-	return "", ErrUnknownFormat
+	return "", fmt.Errorf("unknown remote url format: '%s'", remoteURL)
 }
