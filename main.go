@@ -172,6 +172,8 @@ func openBrowser(url string) error {
 
 	switch runtime.GOOS {
 	case "linux":
+	case "freebsd":
+	case "openbsd":
 		err = exec.Command("xdg-open", url).Start()
 	case "windows":
 		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
