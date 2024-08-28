@@ -154,17 +154,28 @@ func readGitRemoteURL(repoDir string) (string, error) {
 }
 
 func getDefaultBranchName(repoDir string) (string, error) {
+	var result string
 	cmd := exec.Command("git", "-C", repoDir, "symbolic-ref", "refs/remotes/origin/HEAD")
 	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return "", fmt.Errorf("git: %w", err)
+	if err == nil {
+		result = string(output)
+		result = strings.Trim(result, "\r\n")
+		result, _ = strings.CutPrefix(result, "refs/remotes/origin/")
+		return result, nil
 	}
 
-	outStr := string(output)
-	outStr = strings.Trim(outStr, "\r\n")
-	outStr, _ = strings.CutPrefix(outStr, "refs/remotes/origin/")
+	// Try a few common cases if the 'git' command above failed
+	candidates := []string{"master", "main", "trunk"}
+	for _, c := range candidates {
+		_, err := os.Stat(fmt.Sprintf(".git/refs/remotes/origin/%s", c))
+		if err != nil {
+			continue
+		}
 
-	return outStr, nil
+		return c, nil
+	}
+
+	return "", errors.New("cannot determine the branch name")
 }
 
 func openBrowser(url string) error {
