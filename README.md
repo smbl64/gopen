@@ -1,4 +1,5 @@
-# gopen: Open Git-tracked Files in Your Web Browser
+# gopen 
+Open Git-tracked Files in Your Web Browser
 
 ## Introduction
 
@@ -25,7 +26,7 @@ go install github.com/smbl64/gopen@latest
 
 ## Usage
 
-To open a file in your web browser using `gopen`, simply run the following command, replacing `/path/to/file` with the actual path of the file you want to view:
+To open a file or folder in your web browser using `gopen`, simply run the following command, replacing `/path/to/file` with the actual path of the file you want to view:
 
 ```sh
 gopen /path/to/file
@@ -41,6 +42,11 @@ To open a file named `main.go` located in your current directory:
 gopen main.go
 ```
 
+To open current folder:
+```sh
+gopen .
+```
+
 ## Contributing
 
 We welcome contributions! If you find any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
@@ -49,6 +55,3 @@ We welcome contributions! If you find any issues or have suggestions for improve
 
 gopen is released under the MIT License. See the LICENSE file for more details.
 
----
-
-Thank you for using `gopen`! Happy coding!
